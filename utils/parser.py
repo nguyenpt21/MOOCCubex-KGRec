@@ -47,7 +47,7 @@ def parse_args_kgsr():
     parser.add_argument('--context_hops', type=int, default=2, help='number of context hops')
     # ===== save model ===== #
     parser.add_argument("--save", action='store_true', default=True, help="save model or not")
-    parser.add_argument("--out_dir", type=str, default="weights/", help="output directory for model")
+    parser.add_argument("--out_dir", type=str, default="output/", help="output directory for model")
 
     return parser.parse_args()
 
