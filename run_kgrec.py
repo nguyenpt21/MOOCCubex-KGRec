@@ -1,3 +1,4 @@
+
 import setproctitle
 import random
 from tqdm import tqdm
@@ -94,15 +95,15 @@ if __name__ == '__main__':
         """define optimizer"""
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-        test_interval = 1
-        early_stop_step = 10
+        test_interval = 10 if args.dataset == 'last-fm' else 1
+        early_stop_step = 5 if args.dataset == 'last-fm' else 10
 
         cur_best_pre_0 = 0
         cur_stopping_step = 0
         should_stop = False
 
         logger.info("start training ...")
-        for epoch in range(1, args.epoch+1):
+        for epoch in range(1, args.epoch + 1):
             """training CF"""
             """cf data"""
             train_cf_with_neg = neg_sampling_cpp(train_cf, user_dict['train_user_set'])
@@ -134,7 +135,7 @@ if __name__ == '__main__':
 
             if epoch % test_interval == 0 and epoch >= 1:
                 """testing"""
-                print("testing")
+                print('testing')
                 test_s_t = time()
                 model.eval()
                 with torch.no_grad():
@@ -151,16 +152,16 @@ if __name__ == '__main__':
 
                 # *********************************************************
                 # early stopping when cur_best_pre_0 is decreasing for ten successive steps.
-                cur_best_pre_0, cur_stopping_step, should_stop = early_stopping(ret['recall'][-1], cur_best_pre_0,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
-                print(should_stop)
+                cur_best_pre_0, cur_stopping_step, should_stop = early_stopping(ret['recall'][0], cur_best_pre_0,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
                 if cur_stopping_step == 0:
                     logger.info("###find better!")
                 elif should_stop:
                     break
-
+                print(should_stop)
                 """save weight"""
-                if ret['recall'][-1] == cur_best_pre_0 and args.save:
-                    save_path = args.out_dir + log_fn + '.pth'
+                if ret['recall'][0] == cur_best_pre_0 and args.save:
+                    save_path = args.out_dir + log_fn + '.ckpt'
+                    print(save_path)
                     logger.info('save better model at epoch %d to path %s' % (epoch, save_path))
                     torch.save(model.state_dict(), save_path)
 
@@ -168,7 +169,7 @@ if __name__ == '__main__':
                 # logging.info('training loss at epoch %d: %f' % (epoch, loss.item()))
                 logger.info('{}: using time {}, training loss at epoch {}: {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), train_e_t - train_s_t, epoch, list(add_loss_dict.values())))
 
-        logger.info('early stopping at %d, recall@10:%.4f' % (epoch, cur_best_pre_0))
+        logger.info('early stopping at %d, recall@20:%.4f' % (epoch, cur_best_pre_0))
 
     except Exception as e:
         logger.exception(e)

@@ -6,8 +6,6 @@ import numpy as np
 import multiprocessing
 import heapq
 from time import time
-import random
-from tqdm import tqdm
 
 cores = multiprocessing.cpu_count() // 2
 
@@ -97,9 +95,6 @@ def test_one_user(x):
 
     test_items = list(all_items - set(training_items))
 
-    if len(test_items) > 100:
-        test_items = random.sample(test_items, 100)
-
     if args.test_flag == 'part':
         r, auc = ranklist_by_heapq(user_pos_test, test_items, rating, Ks)
     else:
@@ -136,7 +131,7 @@ def test(model, user_dict, n_params):
 
     entity_gcn_emb, user_gcn_emb = model.generate()
 
-    for u_batch_id in tqdm(range(n_user_batchs)):
+    for u_batch_id in range(n_user_batchs):
         start = u_batch_id * u_batch_size
         end = (u_batch_id + 1) * u_batch_size
 
