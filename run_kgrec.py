@@ -94,15 +94,15 @@ if __name__ == '__main__':
         """define optimizer"""
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-        test_interval = 10 if args.dataset == 'last-fm' else 1
-        early_stop_step = 5 if args.dataset == 'last-fm' else 10
+        test_interval = 1
+        early_stop_step = 10
 
         cur_best_pre_0 = 0
         cur_stopping_step = 0
         should_stop = False
 
         logger.info("start training ...")
-        for epoch in range(args.epoch):
+        for epoch in range(1, args.epoch+1):
             """training CF"""
             """cf data"""
             train_cf_with_neg = neg_sampling_cpp(train_cf, user_dict['train_user_set'])
@@ -156,7 +156,7 @@ if __name__ == '__main__':
                     break
 
                 """save weight"""
-                if ret['recall'][0] == cur_best_pre_0 and args.save:
+                if ret['recall'][-1] == cur_best_pre_0 and args.save:
                     save_path = args.out_dir + log_fn + '.ckpt'
                     logger.info('save better model at epoch %d to path %s' % (epoch, save_path))
                     torch.save(model.state_dict(), save_path)
@@ -165,7 +165,7 @@ if __name__ == '__main__':
                 # logging.info('training loss at epoch %d: %f' % (epoch, loss.item()))
                 logger.info('{}: using time {}, training loss at epoch {}: {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), train_e_t - train_s_t, epoch, list(add_loss_dict.values())))
 
-        logger.info('early stopping at %d, recall@20:%.4f' % (epoch, cur_best_pre_0))
+        logger.info('early stopping at %d, recall@10:%.4f' % (epoch, cur_best_pre_0))
 
     except Exception as e:
         logger.exception(e)
