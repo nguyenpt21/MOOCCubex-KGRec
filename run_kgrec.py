@@ -1,4 +1,3 @@
-
 import setproctitle
 import random
 from tqdm import tqdm
@@ -150,7 +149,7 @@ if __name__ == '__main__':
 
                 # *********************************************************
                 # early stopping when cur_best_pre_0 is decreasing for ten successive steps.
-                cur_best_pre_0, cur_stopping_step, should_stop = early_stopping(ret['recall'][0], cur_best_pre_0,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
+                cur_best_pre_0, cur_stopping_step, should_stop = early_stopping(ret['recall'][-1], cur_best_pre_0,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
                 if cur_stopping_step == 0:
                     logger.info("###find better!")
                 elif should_stop:
