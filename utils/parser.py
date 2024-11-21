@@ -18,7 +18,7 @@ def parse_args_kgsr():
     parser.add_argument('--mae_coef', type=float, default=0.1, help='coefficient for MAE loss')
     parser.add_argument('--mae_msize', type=int, default=256, help='mask size for MAE')
     parser.add_argument('--cl_coef', type=float, default=0.01, help='coefficient for CL loss')
-    parser.add_argument('--cl_tau', type=float, default=1.0, help='temperature for CL')
+    parser.add_argument('--cl_tau', type=float, default=0.3, help='temperature for CL')
     parser.add_argument('--cl_drop_ratio', type=float, default=0.5, help='drop ratio for CL')
 
     # ===== train ===== #

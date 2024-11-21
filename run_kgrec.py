@@ -160,7 +160,14 @@ if __name__ == '__main__':
                 if ret['recall'][-1] == cur_best_pre and args.save:
                     save_path = args.out_dir + 'model_epoch{}.pth'.format(epoch)
                     logging.info('save better model at epoch %d to path %s' % (epoch, save_path))
+                    checkpoint_path = args.out_dir + 'checkpoint.pth'
                     torch.save(model.state_dict(), save_path)
+                    torch.save({
+                        'epoch': epoch,
+                        'best_recall': cur_best_pre,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict()
+                    }, checkpoint_path)
 
             else:
                 # logging.info('training loss at epoch %d: %f' % (epoch, loss.item()))
