@@ -146,6 +146,7 @@ if __name__ == '__main__':
                 train_res.add_row(
                     [epoch, train_e_t - train_s_t, test_e_t - test_s_t, list(add_loss_dict.values()), ret['recall'], ret['ndcg'], ret['precision'], ret['hit_ratio']]
                 )
+                print(train_res)
                 logger.info(train_res)
 
                 # *********************************************************

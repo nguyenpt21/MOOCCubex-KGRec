@@ -7,6 +7,7 @@ import multiprocessing
 import heapq
 from time import time
 import random
+from tqdm import tqdm
 
 cores = multiprocessing.cpu_count() // 2
 
@@ -135,7 +136,7 @@ def test(model, user_dict, n_params):
 
     entity_gcn_emb, user_gcn_emb = model.generate()
 
-    for u_batch_id in range(n_user_batchs):
+    for u_batch_id in tqdm(range(n_user_batchs)):
         start = u_batch_id * u_batch_size
         end = (u_batch_id + 1) * u_batch_size
 
