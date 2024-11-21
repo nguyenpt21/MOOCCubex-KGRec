@@ -95,10 +95,10 @@ if __name__ == '__main__':
         """define optimizer"""
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-        test_interval = 10 if args.dataset == 'last-fm' else 1
-        early_stop_step = 5 if args.dataset == 'last-fm' else 10
+        test_interval = 5
+        early_stop_step = 5 
 
-        cur_best_pre_0 = 0
+        cur_best_pre = 0
         cur_stopping_step = 0
         should_stop = False
 
@@ -151,13 +151,13 @@ if __name__ == '__main__':
 
                 # *********************************************************
                 # early stopping when cur_best_pre_0 is decreasing for ten successive steps.
-                cur_best_pre_0, cur_stopping_step, should_stop = early_stopping(ret['recall'][0], cur_best_pre_0,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
+                cur_best_pre, cur_stopping_step, should_stop = early_stopping(ret['recall'][-1], cur_best_pre,cur_stopping_step, expected_order='acc', flag_step=early_stop_step)
                 if cur_stopping_step == 0:
                     logging.info("###find better!")
                 elif should_stop:
                     break
                 """save weight"""
-                if ret['recall'][0] == cur_best_pre_0 and args.save:
+                if ret['recall'][-1] == cur_best_pre and args.save:
                     save_path = args.out_dir + 'model_epoch{}.pth'.format(epoch)
                     logging.info('save better model at epoch %d to path %s' % (epoch, save_path))
                     torch.save(model.state_dict(), save_path)
@@ -166,7 +166,7 @@ if __name__ == '__main__':
                 # logging.info('training loss at epoch %d: %f' % (epoch, loss.item()))
                 logging.info('{}: using time {}, training loss at epoch {}: {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), train_e_t - train_s_t, epoch, list(add_loss_dict.values())))
 
-        logging.info('early stopping at %d, recall@20:%.4f' % (epoch, cur_best_pre_0))
+        logging.info('early stopping at %d, recall@20:%.4f' % (epoch, cur_best_pre))
 
     except Exception as e:
         logging.exception(e)
