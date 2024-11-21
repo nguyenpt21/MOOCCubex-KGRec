@@ -93,11 +93,11 @@ def test_one_user(x):
 
     all_items = set(range(0, n_items))
 
-    unseen_items = list(all_items - set(training_items))
+    possible_negatives = list(all_items - set(training_items) - set(user_pos_test))
 
-    random_unseen_items = random.sample(unseen_items, min(100, len(unseen_items)))
+    negatives_items = random.sample(possible_negatives, min(100, len(possible_negatives)))
 
-    test_items = list(set(random_unseen_items) | set(user_pos_test))
+    test_items = list(set(negatives_items) | set(user_pos_test))
 
     
     if args.test_flag == 'part':

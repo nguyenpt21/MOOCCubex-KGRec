@@ -175,6 +175,7 @@ class KGRec(nn.Module):
 
         # self.print_shapes()
 
+
     def _init_weight(self):
         initializer = nn.init.xavier_uniform_
         self.all_embed = initializer(torch.empty(self.n_nodes, self.emb_size))
