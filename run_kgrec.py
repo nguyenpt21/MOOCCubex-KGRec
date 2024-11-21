@@ -134,6 +134,7 @@ if __name__ == '__main__':
 
             if epoch % test_interval == 0 and epoch >= 1:
                 """testing"""
+                print("testing")
                 test_s_t = time()
                 model.eval()
                 with torch.no_grad():
@@ -157,7 +158,7 @@ if __name__ == '__main__':
 
                 """save weight"""
                 if ret['recall'][-1] == cur_best_pre_0 and args.save:
-                    save_path = args.out_dir + log_fn + '.ckpt'
+                    save_path = args.out_dir + log_fn + '.pth'
                     logger.info('save better model at epoch %d to path %s' % (epoch, save_path))
                     torch.save(model.state_dict(), save_path)
 
