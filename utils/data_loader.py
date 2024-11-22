@@ -15,6 +15,7 @@ n_entities = 0
 n_relations = 0
 n_nodes = 0
 train_user_set = defaultdict(list)
+val_user_set = defaultdict(list)
 test_user_set = defaultdict(list)
 
 
@@ -33,13 +34,15 @@ def read_cf(file_name):
     return np.array(inter_mat)
 
 
-def remap_item(train_data, test_data):
+def remap_item(train_data, val_data, test_data):
     global n_users, n_items
-    n_users = max(max(train_data[:, 0]), max(test_data[:, 0])) + 1
-    n_items = max(max(train_data[:, 1]), max(test_data[:, 1])) + 1
+    n_users = max(max(train_data[:, 0]), max(test_data[:, 0]), max(val_data[:0])) + 1
+    n_items = max(max(train_data[:, 1]), max(test_data[:, 1]), max(val_data[:1])) + 1
 
     for u_id, i_id in train_data:
         train_user_set[int(u_id)].append(int(i_id))
+    for u_id, i_id in val_data:
+        val_user_set[int(u_id)].append(int(i_id))
     for u_id, i_id in test_data:
         test_user_set[int(u_id)].append(int(i_id))
 
@@ -142,9 +145,10 @@ def load_data(model_args):
 
     print('reading train and test user-item set ...')
     train_cf = read_cf(directory + 'train.txt')
+    val_cf = read_cf(directory + 'val.txt')
     test_cf = read_cf(directory + 'test.txt')
-    print('interaction count: train %d, test %d' % (train_cf.shape[0], test_cf.shape[0]))
-    remap_item(train_cf, test_cf)
+    print('interaction count: train %d, val %d, test %d' % (train_cf.shape[0], val_cf.shape[0], test_cf.shape[0]))
+    remap_item(train_cf, val_cf, test_cf)
 
     print('combinating train_cf and kg data ...')
     triplets = read_triplets(directory + 'kg_final.txt')
@@ -164,9 +168,10 @@ def load_data(model_args):
     }
     user_dict = {
         'train_user_set': train_user_set,
+        'val_user_set': val_user_set,
         'test_user_set': test_user_set
     }
 
-    return train_cf, test_cf, user_dict, n_params, graph, \
+    return train_cf, val_cf, test_cf, user_dict, n_params, graph, \
            [adj_mat_list, norm_mat_list, mean_mat_list]
 

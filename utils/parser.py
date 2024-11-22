@@ -44,6 +44,10 @@ def parse_args_kgsr():
                         help='Epoch interval of evaluating CF.')
     parser.add_argument('--stop_steps', type=int, default=5,
                         help='Number of epoch for early stopping')
+    parser.add_argument('--use_pretrain', type=int, default=0,
+                        help='0: No pretrain,  1: Pretrain with stored model.')
+    parser.add_argument('--pretrain_model_path', nargs='?', default='output/checkpoint.pth',
+                        help='Path of stored model.')
 
     # ===== relation context ===== #
     parser.add_argument('--context_hops', type=int, default=2, help='number of context hops')

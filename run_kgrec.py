@@ -76,7 +76,7 @@ if __name__ == '__main__':
         
 
         """build dataset"""
-        train_cf, test_cf, user_dict, n_params, graph, mat_list = load_data(args)
+        train_cf, val_cf, test_cf, user_dict, n_params, graph, mat_list = load_data(args)
         adj_mat_list, norm_mat_list, mean_mat_list = mat_list
 
         n_users = n_params['n_users']
@@ -95,15 +95,26 @@ if __name__ == '__main__':
         """define optimizer"""
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
+        cur_best_pre = 0
+        cur_stopping_step = 0
+        start_epoch = 1
+        should_stop = False
+
         test_interval = args.test_interval
         early_stop_step = args.stop_steps 
 
-        cur_best_pre = 0
-        cur_stopping_step = 0
-        should_stop = False
+        best_model_path = args.out_dir + 'best_model.pth'
+
+        if args.use_pretrain == 1:
+            checkpoint = torch.load(args.pretrain_model_path)
+            model.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            cur_best_pre = checkpoint['best_recall']
+            cur_stopping_step = checkpoint['cur_stopping_step']
+            start_epoch = checkpoint['epoch'] + 1
 
         logging.info("start training ...")
-        for epoch in range(1, args.epoch + 1):
+        for epoch in range(start_epoch, args.epoch + 1):
             """training CF"""
             """cf data"""
             train_cf_with_neg = neg_sampling_cpp(train_cf, user_dict['train_user_set'])
@@ -139,7 +150,7 @@ if __name__ == '__main__':
                 test_s_t = time()
                 model.eval()
                 with torch.no_grad():
-                    ret = test(model, user_dict, n_params)
+                    ret = test(model, user_dict, n_params, mode='val')
                 test_e_t = time()
 
                 train_res = PrettyTable()
@@ -157,11 +168,10 @@ if __name__ == '__main__':
                 elif should_stop:
                     break
                 """save weight"""
-                if ret['recall'][-1] == cur_best_pre and args.save:
-                    save_path = args.out_dir + 'model_epoch{}.pth'.format(epoch)
-                    logging.info('save better model at epoch %d to path %s' % (epoch, save_path))
+                if ret['recall'][-1] == cur_best_pre and args.save:                   
+                    logging.info('save better model at epoch %d to path %s' % (epoch, best_model_path))
                     checkpoint_path = args.out_dir + 'checkpoint.pth'
-                    torch.save(model.state_dict(), save_path)
+                    torch.save(model.state_dict(), best_model_path)
                     torch.save({
                         'epoch': epoch,
                         'best_recall': cur_best_pre,
@@ -169,12 +179,24 @@ if __name__ == '__main__':
                         'optimizer_state_dict': optimizer.state_dict(),
                         'cur_stopping_step': cur_stopping_step
                     }, checkpoint_path)
-
             else:
                 # logging.info('training loss at epoch %d: %f' % (epoch, loss.item()))
                 logging.info('{}: using time {}, training loss at epoch {}: {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), train_e_t - train_s_t, epoch, list(add_loss_dict.values())))
 
-        logging.info('early stopping at %d, recall@20:%.4f' % (epoch, cur_best_pre))
+        logging.info('early stopping at %d, recall@10:%.4f' % (epoch, cur_best_pre))
+        """testing"""
+        print('final testing')
+        model.load_state_dict(torch.load(best_model_path))
+        model.eval()
+        with torch.no_grad():
+            final_ret = test(model, user_dict, n_params, mode='test')
 
+        final_train_res = PrettyTable()
+        final_train_res.field_names = ["recall", "ndcg", "precision", "hit_ratio"]
+        final_train_res.add_row(
+            [final_ret['recall'], final_ret['ndcg'], final_ret['precision'], final_ret['hit_ratio']]
+        )
+        logging.info(final_train_res)
+        
     except Exception as e:
         logging.exception(e)

@@ -108,7 +108,7 @@ def test_one_user(x):
     return get_performance(user_pos_test, r, auc, Ks)
 
 
-def test(model, user_dict, n_params):
+def test(model, user_dict, n_params, mode):
     result = {'precision': np.zeros(len(Ks)),
               'recall': np.zeros(len(Ks)),
               'ndcg': np.zeros(len(Ks)),
@@ -121,7 +121,11 @@ def test(model, user_dict, n_params):
 
     global train_user_set, test_user_set
     train_user_set = user_dict['train_user_set']
-    test_user_set = user_dict['test_user_set']
+    
+    if mode == 'val':
+        test_user_set = user_dict['val_user_set']
+    else:
+        test_user_set = user_dict['test_user_set']
 
     pool = multiprocessing.Pool(cores)
 
