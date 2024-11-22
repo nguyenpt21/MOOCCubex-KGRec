@@ -36,8 +36,8 @@ def read_cf(file_name):
 
 def remap_item(train_data, val_data, test_data):
     global n_users, n_items
-    n_users = max(max(train_data[:, 0]), max(test_data[:, 0]), max(val_data[:0])) + 1
-    n_items = max(max(train_data[:, 1]), max(test_data[:, 1]), max(val_data[:1])) + 1
+    n_users = max(max(train_data[:, 0]), max(val_data[:, 0]), max(test_data[:, 0])) + 1
+    n_items = max(max(train_data[:, 1]), max(val_data[:, 1]), max(test_data[:, 1])) + 1
 
     for u_id, i_id in train_data:
         train_user_set[int(u_id)].append(int(i_id))
