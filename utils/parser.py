@@ -40,6 +40,10 @@ def parse_args_kgsr():
     parser.add_argument('--Ks', nargs='?', default='[1, 5, 10]', help='Output sizes of every layer')
     parser.add_argument('--test_flag', nargs='?', default='part',
                         help='Specify the test type from {part, full}, indicating whether the reference is done in mini-batch')
+    parser.add_argument('--test_interval', type=int, default=5,
+                        help='Epoch interval of evaluating CF.')
+    parser.add_argument('--stop_steps', type=int, default=5,
+                        help='Number of epoch for early stopping')
 
     # ===== relation context ===== #
     parser.add_argument('--context_hops', type=int, default=2, help='number of context hops')

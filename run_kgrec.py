@@ -95,8 +95,8 @@ if __name__ == '__main__':
         """define optimizer"""
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-        test_interval = 5
-        early_stop_step = 5 
+        test_interval = args.test_interval
+        early_stop_step = args.stop_steps 
 
         cur_best_pre = 0
         cur_stopping_step = 0
@@ -166,7 +166,8 @@ if __name__ == '__main__':
                         'epoch': epoch,
                         'best_recall': cur_best_pre,
                         'model_state_dict': model.state_dict(),
-                        'optimizer_state_dict': optimizer.state_dict()
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'cur_stopping_step': cur_stopping_step
                     }, checkpoint_path)
 
             else:
