@@ -91,7 +91,7 @@ if __name__ == '__main__':
     should_stop = False
 
     print("start training ...")
-    for epoch in range(args.epoch):
+    for epoch in range(1, args.epoch+1):
         """training CF"""
         # shuffle training data
         index = np.arange(len(train_cf))

@@ -6,6 +6,7 @@ import numpy as np
 import multiprocessing
 import heapq
 from time import time
+import random
 
 cores = multiprocessing.cpu_count() // 2
 
@@ -90,10 +91,14 @@ def test_one_user(x):
         training_items = []
     # user u's items in the test set
     user_pos_test = test_user_set[u]
-
+    
     all_items = set(range(0, n_items))
 
-    test_items = list(all_items - set(training_items))
+    possible_negatives = list(all_items - set(training_items) - set(user_pos_test))
+
+    negatives_items = random.sample(possible_negatives, min(100, len(possible_negatives)))
+
+    test_items = list(set(negatives_items) | set(user_pos_test))
 
     if args.test_flag == 'part':
         r, auc = ranklist_by_heapq(user_pos_test, test_items, rating, Ks)
