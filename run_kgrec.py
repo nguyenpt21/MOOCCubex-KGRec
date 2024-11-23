@@ -105,6 +105,9 @@ if __name__ == '__main__':
 
         best_model_path = args.out_dir + 'best_model.pth'
 
+        if not os.path.isfile(best_model_path):
+            best_model_path = args.alt_best_model_path
+
         if args.use_pretrain == 1:
             checkpoint = torch.load(args.pretrain_model_path)
             model.load_state_dict(checkpoint['model_state_dict'])

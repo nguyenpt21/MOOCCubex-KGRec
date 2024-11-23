@@ -48,6 +48,8 @@ def parse_args_kgsr():
                         help='0: No pretrain,  1: Pretrain with stored model.')
     parser.add_argument('--pretrain_model_path', nargs='?', default='output/checkpoint.pth',
                         help='Path of stored model.')
+    parser.add_argument('--alt_best_model_path', nargs='?', default='output/best_model.pth',
+                        help='Path of stored model.')
 
     # ===== relation context ===== #
     parser.add_argument('--context_hops', type=int, default=2, help='number of context hops')
