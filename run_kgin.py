@@ -67,7 +67,7 @@ if __name__ == '__main__':
     device = torch.device("cuda:"+str(args.gpu_id)) if args.cuda else torch.device("cpu")
 
     """build dataset"""
-    train_cf, test_cf, user_dict, n_params, graph, mat_list = load_data(args)
+    train_cf, val_cf, test_cf, user_dict, n_params, graph, mat_list = load_data(args)
     adj_mat_list, norm_mat_list, mean_mat_list = mat_list
 
     n_users = n_params['n_users']
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         if epoch >= 1:
             """testing"""
             test_s_t = time()
-            ret = test(model, user_dict, n_params)
+            ret = test(model, user_dict, n_params, mode="val")
             test_e_t = time()
 
             train_res = PrettyTable()
