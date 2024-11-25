@@ -153,7 +153,7 @@ if __name__ == '__main__':
                 test_s_t = time()
                 model.eval()
                 with torch.no_grad():
-                    ret = test(model, user_dict, n_params, mode='val')
+                    ret = test(model, user_dict, n_params)
                 test_e_t = time()
 
                 train_res = PrettyTable()
