@@ -123,7 +123,7 @@ if __name__ == '__main__':
         if epoch >= 1:
             """testing"""
             test_s_t = time()
-            ret = test(model, user_dict, n_params, mode="val")
+            ret = test(model, user_dict, n_params)
             test_e_t = time()
 
             train_res = PrettyTable()
